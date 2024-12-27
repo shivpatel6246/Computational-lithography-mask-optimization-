@@ -1,0 +1,46 @@
+import os
+import random
+import shutil
+
+# Path to your datasets
+input_folder = '/Users/shivpatel/Desktop/lithodata/MetalSet/target'  # e.g., 'Target' or 'GDS'
+output_folder = '/Users/shivpatel/Desktop/lithodata/MetalSet/printed'  # e.g., 'Litho' or 'PixelILT'
+
+# Get all the filenames of the images
+input_images = os.listdir(input_folder)
+output_images = os.listdir(output_folder)
+
+# Pair up input and output images (assuming they're in the same order)
+image_pairs = list(zip(input_images, output_images))
+
+# Shuffle the dataset for random splits
+random.shuffle(image_pairs)
+
+# Split the dataset into training, validation, and testing
+train_size = int(0.7 * len(image_pairs))
+val_size = int(0.15 * len(image_pairs))
+test_size = len(image_pairs) - train_size - val_size  
+
+
+train_pairs = image_pairs[:train_size]
+val_pairs = image_pairs[train_size:train_size+val_size]
+test_pairs = image_pairs[train_size+val_size:]
+
+
+# Create directories to store the split data
+os.makedirs('train/input', exist_ok=True)
+os.makedirs('train/output', exist_ok=True)
+os.makedirs('val/input', exist_ok=True)
+os.makedirs('val/output', exist_ok=True)
+os.makedirs('test/input', exist_ok=True)
+os.makedirs('test/output', exist_ok=True)
+
+# Copy images into respective folders
+def copy_files(image_pairs, input_folder, output_folder, input_dest, output_dest):
+    for input_img, output_img in image_pairs:
+        shutil.copy(os.path.join(input_folder, input_img), os.path.join(input_dest, input_img))
+        shutil.copy(os.path.join(output_folder, output_img), os.path.join(output_dest, output_img))
+
+copy_files(train_pairs, input_folder, output_folder, 'train/input', 'train/output')
+copy_files(val_pairs, input_folder, output_folder, 'val/input', 'val/output')
+copy_files(test_pairs, input_folder, output_folder, 'test/input', 'test/output')
