@@ -2,16 +2,19 @@ import os
 import random
 import shutil
 
-# Path to your datasets
-input_folder = '/Users/shivpatel/Desktop/lithodata/MetalSet/target'  # e.g., 'Target' or 'GDS'
-output_folder = '/Users/shivpatel/Desktop/lithodata/MetalSet/printed'  # e.g., 'Litho' or 'PixelILT'
+# Paths to your datasets
+input_folder = '/Users/shivpatel/Desktop/lithodata/MetalSet/target'  # Input folder
+output_folder = '/Users/shivpatel/Desktop/lithodata/MetalSet/printed'  # Output folder
 
-# Get all the filenames of the images
-input_images = os.listdir(input_folder)
-output_images = os.listdir(output_folder)
+# Get the filenames
+input_images = set(os.listdir(input_folder))
+output_images = set(os.listdir(output_folder))
 
-# Pair up input and output images (assuming they're in the same order)
-image_pairs = list(zip(input_images, output_images))
+# Find common files between the two folders
+common_files = input_images.intersection(output_images)
+
+# Pair input and output images for only the common files
+image_pairs = [(img, img) for img in sorted(common_files)]
 
 # Shuffle the dataset for random splits
 random.shuffle(image_pairs)
@@ -19,13 +22,11 @@ random.shuffle(image_pairs)
 # Split the dataset into training, validation, and testing
 train_size = int(0.7 * len(image_pairs))
 val_size = int(0.15 * len(image_pairs))
-test_size = len(image_pairs) - train_size - val_size  
-
+test_size = len(image_pairs) - train_size - val_size
 
 train_pairs = image_pairs[:train_size]
 val_pairs = image_pairs[train_size:train_size+val_size]
 test_pairs = image_pairs[train_size+val_size:]
-
 
 # Create directories to store the split data
 os.makedirs('train/input', exist_ok=True)
@@ -35,12 +36,15 @@ os.makedirs('val/output', exist_ok=True)
 os.makedirs('test/input', exist_ok=True)
 os.makedirs('test/output', exist_ok=True)
 
-# Copy images into respective folders
+# Function to copy files into respective folders
 def copy_files(image_pairs, input_folder, output_folder, input_dest, output_dest):
     for input_img, output_img in image_pairs:
         shutil.copy(os.path.join(input_folder, input_img), os.path.join(input_dest, input_img))
         shutil.copy(os.path.join(output_folder, output_img), os.path.join(output_dest, output_img))
 
+# Copy images into train, val, and test folders
 copy_files(train_pairs, input_folder, output_folder, 'train/input', 'train/output')
 copy_files(val_pairs, input_folder, output_folder, 'val/input', 'val/output')
 copy_files(test_pairs, input_folder, output_folder, 'test/input', 'test/output')
+
+print("Dataset split completed successfully!")
