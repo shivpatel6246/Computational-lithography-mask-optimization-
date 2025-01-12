@@ -1,0 +1,3 @@
+this project was a personal introduction to ML for me. I tried to create a model to predict the output printed image of a photolithographic process. I used the lithobench dataset of metal circuit printing to determine how real world manufacturing tolerances,
+material properties and non ideal methods can lead to non ideal printed shapes. This model aimed to showcase how a non-ideal input design would actually be printed based on abstracted characterisitcs of the machine itself. It could in theory be used as a tool for 
+chip designers to determine the existince of lithographic hotspots before they occur. 
